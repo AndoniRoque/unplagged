@@ -31,7 +31,7 @@ function Import({ setClients }) {
       w={"full"}
       justifyContent={"center"}
       alignItems={"center"}
-      mt={4}
+      m={4}
       flexDirection={"column"}
     >
       <Input

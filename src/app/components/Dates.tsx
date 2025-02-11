@@ -5,14 +5,22 @@ import autoTable from "jspdf-autotable";
 import React, { useState } from "react";
 import dayjs from "dayjs";
 
-function Dates({ clients }) {
+interface Cliente {
+  PRODUCTOS: string;
+  NOMBRE: string;
+  NRO: string;
+  DIRECCIÓN: string;
+  SERVICIO: string;
+}
+
+function Dates({ clients }: { clients: Cliente[] }) {
   const [fechaEmision, setFechaEmision] = useState<string>("");
   const [fechaTrabajo, setfechaTrabajo] = useState<string>("");
   const img = new Image();
   img.src = "/unplagged-icon.png";
 
-  const savePDF = (clients) => {
-    clients.forEach((cliente: string) => {
+  const savePDF = (clients: Cliente[]) => {
+    clients.forEach((cliente: Cliente) => {
       const doc = new jsPDF();
       doc.setProperties({
         title: `${cliente.NRO}.pdf`,
@@ -29,6 +37,7 @@ function Dates({ clients }) {
         150,
         20
       );
+      doc.text(`Certif. N° ${cliente.NRO}`, 150, 25);
       doc.text("Sandra Sapoznik, Andrés Molina y Pablo Pozo S.H.", 40, 15);
       doc.text("Ing.Luiggi 1448 - Bahía Blanca, Buenos Aires.", 40, 20);
       doc.text(
@@ -54,13 +63,16 @@ function Dates({ clients }) {
       while (servicios.length < maxLength) servicios.push("");
       while (productos.length < maxLength) productos.push("");
 
-      // 📌 Construir el cuerpo de la tabla con los servicios divididos
-      const tableBody = servicios.map((servicio, index) => [
-        servicio.trim(), // 🔹 SERVICIO
-        productos[index].trim(), // 🔹 PRODUCTO
-        "10 c/l", // 🔹 Dosis
-        "M", // 🔹 Aplicación
+      const tableBody = servicios.map((servicio: string, index: number) => [
+        servicio.trim(),
+        productos[index].trim(),
+        "10 c/l",
+        "M",
       ]);
+
+      while (tableBody.length < 3) {
+        tableBody.push(["", "", "", ""]);
+      }
 
       autoTable(doc, {
         startY: 55,
@@ -87,6 +99,33 @@ function Dates({ clients }) {
         body: tableBody,
       });
 
+      autoTable(doc, {
+        startY: 90,
+        head: [["Municipalidad"]],
+        theme: "grid",
+        margin: {
+          left: 111,
+        },
+        styles: {
+          halign: "center",
+          valign: "bottom",
+          lineColor: [0, 0, 0],
+          lineWidth: 0.2,
+          textColor: [0, 0, 0],
+        },
+        headStyles: {
+          fillColor: [255, 255, 255],
+          textColor: [0, 0, 0],
+          lineColor: [0, 0, 0],
+          lineWidth: 0.2,
+          minCellHeight: 50,
+          cellWidth: 85,
+        },
+      });
+
+      doc.text("Director Técnico", 20, 130);
+      doc.text("Técnico", 70, 130);
+
       doc.save(`${cliente.NRO}.pdf`);
     });
   };
@@ -99,21 +138,19 @@ function Dates({ clients }) {
         alignItems={"center"}
         flexDirection={"column"}
       >
-        <Flex w={500} p={4} alignItems={"center"}>
-          <Text w={300}>Fecha de Emisión</Text>
+        <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
+          <Text w={200}>Fecha de Emisión:</Text>
           <Input
             type="date"
-            w={415}
             p={2}
             value={fechaEmision}
             onChange={(e) => setFechaEmision(e.target.value)}
           />
         </Flex>
-        <Flex w={500} p={4} alignItems={"center"}>
-          <Text w={300}>Fecha de Trabajo</Text>
+        <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
+          <Text w={200}>Fecha de Trabajo:</Text>
           <Input
             type="date"
-            w={415}
             p={2}
             value={fechaTrabajo}
             onChange={(e) => setfechaTrabajo(e.target.value)}

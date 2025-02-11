@@ -20,8 +20,14 @@ function Dates({ clients }: { clients: Cliente[] }) {
   img.src = "/unplagged-icon.png";
 
   const savePDF = (clients: Cliente[]) => {
-    clients.forEach((cliente: Cliente) => {
-      const doc = new jsPDF();
+    if (fechaEmision === "" && fechaTrabajo === "") {
+      return alert("Por favor complete las fechas de emisión y trabajo.");
+    }
+
+    const doc = new jsPDF();
+
+    clients.forEach((cliente: Cliente, index: number) => {
+      if (index > 0) doc.addPage();
       doc.setProperties({
         title: `${cliente.NRO}.pdf`,
       });
@@ -125,9 +131,8 @@ function Dates({ clients }: { clients: Cliente[] }) {
 
       doc.text("Director Técnico", 20, 130);
       doc.text("Técnico", 70, 130);
-
-      doc.save(`${cliente.NRO}.pdf`);
     });
+    doc.save(`Certificados.pdf`);
   };
 
   return (

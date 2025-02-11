@@ -18,6 +18,7 @@ function Dates({ clients }: { clients: Cliente[] }) {
   const [fechaTrabajo, setfechaTrabajo] = useState<string>("");
   const img = new Image();
   img.src = "/unplagged-icon.png";
+  let i = 0;
 
   const savePDF = (clients: Cliente[]) => {
     if (fechaEmision === "" && fechaTrabajo === "") {
@@ -25,8 +26,15 @@ function Dates({ clients }: { clients: Cliente[] }) {
     }
 
     const doc = new jsPDF();
+    let fechaTrabajoActual = dayjs(fechaTrabajo);
 
     clients.forEach((cliente: Cliente, index: number) => {
+      i++;
+
+      if (i % 5 === 0) {
+        fechaTrabajoActual = fechaTrabajoActual.subtract(1, "day");
+      }
+
       if (index > 0) doc.addPage();
       doc.setProperties({
         title: `${cliente.NRO}.pdf`,
@@ -39,7 +47,7 @@ function Dates({ clients }: { clients: Cliente[] }) {
         15
       );
       doc.text(
-        `Fecha de Trabajo: ${dayjs(fechaTrabajo).format("DD-MM-YYYY")}`,
+        `Fecha de Trabajo: ${fechaTrabajoActual.format("DD-MM-YYYY")}`,
         150,
         20
       );

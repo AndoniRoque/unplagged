@@ -16,8 +16,14 @@ interface Cliente {
 function Dates({ clients }: { clients: Cliente[] }) {
   const [fechaEmision, setFechaEmision] = useState<string>("");
   const [fechaTrabajo, setfechaTrabajo] = useState<string>("");
-  const img = new Image();
-  img.src = "/unplagged-icon.png";
+  const unplaggedIcon = new Image();
+  unplaggedIcon.src = "/unplagged-icon.png";
+  // const efmarcoIcon = new Image();
+  // efmarcoIcon.src = "/efmarco-icon.png";
+  const firmaSandra = new Image();
+  firmaSandra.src = "/firmaSandra.png";
+  const firmas = new Image();
+  firmas.src = "/firmas.png";
   let i = 0;
 
   const savePDF = (clients: Cliente[]) => {
@@ -27,42 +33,62 @@ function Dates({ clients }: { clients: Cliente[] }) {
 
     const doc = new jsPDF();
     let fechaTrabajoActual = dayjs(fechaTrabajo);
+    let certificadoEnPagina = 0;
+    let startY = 10;
 
     clients.forEach((cliente: Cliente, index: number) => {
       i++;
+
+      if (certificadoEnPagina === 2) {
+        doc.addPage();
+        certificadoEnPagina = 0;
+        startY = 10;
+      }
 
       if (i % 5 === 0) {
         fechaTrabajoActual = fechaTrabajoActual.subtract(1, "day");
       }
 
-      if (index > 0) doc.addPage();
-      doc.setProperties({
-        title: `${cliente.NRO}.pdf`,
-      });
-      doc.setFontSize(10);
-      doc.addImage(img, "png", 10, 10, 20, 20);
+      doc.setFontSize(8);
+      doc.addImage(unplaggedIcon, "png", 10, startY, 20, 20);
       doc.text(
         `Fecha de Emisión: ${dayjs(fechaEmision).format("DD-MM-YYYY")}`,
         150,
-        15
+        startY + 5
       );
       doc.text(
         `Fecha de Trabajo: ${fechaTrabajoActual.format("DD-MM-YYYY")}`,
         150,
-        20
+        startY + 10
       );
-      doc.text(`Certif. N° ${cliente.NRO}`, 150, 25);
-      doc.text("Sandra Sapoznik, Andrés Molina y Pablo Pozo S.H.", 40, 15);
-      doc.text("Ing.Luiggi 1448 - Bahía Blanca, Buenos Aires.", 40, 20);
+      doc
+        .setFontSize(10)
+        .setFont(undefined, "bold")
+        .text(`Certif. N° ${cliente.NRO}`, 150, startY + 15)
+        .setFont(undefined, "normal");
+      doc
+        .setFont(undefined, "bold")
+        .text(
+          "Sandra Sapoznik, Andrés Molina y Pablo Pozo S.H.",
+          35,
+          startY + 5
+        )
+        .setFont(undefined, "normal");
+      doc.text(
+        "Ing.Luiggi 1448 - Bahía Blanca, Buenos Aires.",
+        35,
+        startY + 10
+      );
       doc.text(
         "Tel.: 0291-154706376 | e-mail: sandra_sapoznik@efmarco.com",
-        40,
-        25
+        35,
+        startY + 15
       );
-      doc.text("Bajo licencia de Efmarco", 40, 30);
-      doc.text(`Cliente: ${cliente.NOMBRE}`, 10, 45);
-      doc.text(`Dirección: ${cliente.DIRECCIÓN}`, 10, 50);
-      doc.text("Localidad: Bahía Blanca", 100, 50);
+      doc.text("Representantes", 35, startY + 20);
+      // doc.addImage(unplaggedIcon, "png", ); EFMARCO LOGO
+      doc.text(`Cliente: ${cliente.NOMBRE}`, 10, startY + 30);
+      doc.text(`Dirección: ${cliente.DIRECCIÓN}`, 10, startY + 35);
+      doc.text("Localidad: Bahía Blanca", 100, startY + 35);
 
       const servicios = cliente.SERVICIO.includes("/")
         ? cliente.SERVICIO.split("/")
@@ -89,7 +115,7 @@ function Dates({ clients }: { clients: Cliente[] }) {
       }
 
       autoTable(doc, {
-        startY: 55,
+        startY: startY + 40,
         head: [
           ["Tratamiento", "Producto", "Dosis", "Aplic.", "Sectores Tratados"],
         ],
@@ -114,7 +140,7 @@ function Dates({ clients }: { clients: Cliente[] }) {
       });
 
       autoTable(doc, {
-        startY: 90,
+        startY: startY + 75,
         head: [["Municipalidad"]],
         theme: "grid",
         margin: {
@@ -137,8 +163,11 @@ function Dates({ clients }: { clients: Cliente[] }) {
         },
       });
 
-      doc.text("Director Técnico", 20, 130);
-      doc.text("Técnico", 70, 130);
+      doc.addImage(firmas, "png", -70, startY + 30, 220, 130);
+      doc.addImage(firmaSandra, "png", -35, startY + 34, 220, 130);
+
+      certificadoEnPagina++;
+      startY += 145;
     });
     doc.save(`Certificados.pdf`);
   };

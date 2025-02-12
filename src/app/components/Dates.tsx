@@ -56,7 +56,7 @@ function Dates({
         fechaTrabajoActual = fechaTrabajoActual.subtract(1, "day");
       }
 
-      doc.setFontSize(8);
+      doc.setFontSize(9);
       doc.addImage(unplaggedIcon, "png", 10, startY, 20, 20);
       doc.text(
         `Fecha de Emisión: ${dayjs(fechaEmision).format("DD-MM-YYYY")}`,

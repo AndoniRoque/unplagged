@@ -36,7 +36,7 @@ function Dates({
     }
 
     const doc = new jsPDF();
-    doc.addFont("/fonts/Roboto/Roboto-Medium.ttf", "Roboto", "normal");
+    doc.addFont("/fonts/Roboto/Roboto-Regular.ttf", "Roboto", "normal");
     doc.addFont("/fonts/Roboto/Roboto-Bold.ttf", "Roboto", "bold");
     doc.setFont("Roboto", "normal");
     let fechaTrabajoActual = dayjs(fechaTrabajo);

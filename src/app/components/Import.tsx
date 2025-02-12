@@ -2,20 +2,14 @@
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
 import Papa from "papaparse";
-
-interface Cliente {
-  PRODUCTOS: string;
-  NOMBRE: string;
-  NRO: string;
-  DIRECCIÓN: string;
-  SERVICIO: string;
-}
+import { Cliente } from "../types/types";
 
 interface ImportProps {
   setClients: React.Dispatch<React.SetStateAction<Cliente[]>>;
+  setIsFileUploaded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function Import({ setClients }: ImportProps) {
+function Import({ setClients, setIsFileUploaded }: ImportProps) {
   const [fileName, setFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,6 +18,7 @@ function Import({ setClients }: ImportProps) {
 
     if (file && file.type === "text/csv") {
       setFileName(file.name);
+      setIsFileUploaded(true);
 
       Papa.parse<Cliente>(file, {
         complete: (results: Papa.ParseResult<Cliente>) => {
@@ -34,7 +29,8 @@ function Import({ setClients }: ImportProps) {
         skipEmptyLines: true,
       });
     } else {
-      alert("Por favor,  sube un archivo CSV válido");
+      setIsFileUploaded(false);
+      alert("Por favor, sube un archivo CSV válido");
     }
   };
 

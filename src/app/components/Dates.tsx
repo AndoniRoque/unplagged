@@ -5,21 +5,21 @@ import autoTable from "jspdf-autotable";
 import React, { useState } from "react";
 import dayjs from "dayjs";
 
-interface Cliente {
-  PRODUCTOS: string;
-  NOMBRE: string;
-  NRO: string;
-  DIRECCIÓN: string;
-  SERVICIO: string;
-}
+import { Cliente } from "../types/types";
 
-function Dates({ clients }: { clients: Cliente[] }) {
+function Dates({
+  clients,
+  isFileUploaded,
+}: {
+  clients: Cliente[];
+  isFileUploaded: boolean;
+}) {
   const [fechaEmision, setFechaEmision] = useState<string>("");
   const [fechaTrabajo, setfechaTrabajo] = useState<string>("");
   const unplaggedIcon = new Image();
   unplaggedIcon.src = "/unplagged-icon.png";
-  // const efmarcoIcon = new Image();
-  // efmarcoIcon.src = "/efmarco-icon.png";
+  const efmarcoLogo = new Image();
+  efmarcoLogo.src = "/efmarco-logo.png";
   const firmaSandra = new Image();
   firmaSandra.src = "/firmaSandra.png";
   const firmas = new Image();
@@ -27,16 +27,23 @@ function Dates({ clients }: { clients: Cliente[] }) {
   let i = 0;
 
   const savePDF = (clients: Cliente[]) => {
+    if (!isFileUploaded) {
+      return alert("Por favor, sube un archivo CSV antes de generar el PDF.");
+    }
+
     if (fechaEmision === "" && fechaTrabajo === "") {
       return alert("Por favor complete las fechas de emisión y trabajo.");
     }
 
     const doc = new jsPDF();
+    doc.addFont("/fonts/Roboto/Roboto-Medium.ttf", "Roboto", "normal");
+    doc.addFont("/fonts/Roboto/Roboto-Bold.ttf", "Roboto", "bold");
+    doc.setFont("Roboto", "normal");
     let fechaTrabajoActual = dayjs(fechaTrabajo);
     let certificadoEnPagina = 0;
     let startY = 10;
 
-    clients.forEach((cliente: Cliente, index: number) => {
+    clients.forEach((cliente: Cliente) => {
       i++;
 
       if (certificadoEnPagina === 2) {
@@ -63,17 +70,17 @@ function Dates({ clients }: { clients: Cliente[] }) {
       );
       doc
         .setFontSize(10)
-        .setFont(undefined, "bold")
+        .setFont("Roboto", "bold")
         .text(`Certif. N° ${cliente.NRO}`, 150, startY + 15)
-        .setFont(undefined, "normal");
+        .setFont("Roboto", "normal");
       doc
-        .setFont(undefined, "bold")
+        .setFont("Roboto", "bold")
         .text(
           "Sandra Sapoznik, Andrés Molina y Pablo Pozo S.H.",
           35,
           startY + 5
         )
-        .setFont(undefined, "normal");
+        .setFont("Roboto", "normal");
       doc.text(
         "Ing.Luiggi 1448 - Bahía Blanca, Buenos Aires.",
         35,
@@ -85,10 +92,14 @@ function Dates({ clients }: { clients: Cliente[] }) {
         startY + 15
       );
       doc.text("Representantes", 35, startY + 20);
-      // doc.addImage(unplaggedIcon, "png", ); EFMARCO LOGO
+      doc.addImage(efmarcoLogo, "png", 63, startY + 16, 23, 7);
       doc.text(`Cliente: ${cliente.NOMBRE}`, 10, startY + 30);
       doc.text(`Dirección: ${cliente.DIRECCIÓN}`, 10, startY + 35);
-      doc.text("Localidad: Bahía Blanca", 100, startY + 35);
+      doc.text(
+        `Localidad: ${cliente.LOCALIDAD ? cliente.LOCALIDAD : "Bahía Blanca"}`,
+        100,
+        startY + 35
+      );
 
       const servicios = cliente.SERVICIO.includes("/")
         ? cliente.SERVICIO.split("/")

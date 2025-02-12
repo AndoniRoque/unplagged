@@ -3,17 +3,12 @@ import { useState } from "react";
 import Dates from "./components/Dates";
 import Import from "./components/Import";
 import { Flex, Image } from "@chakra-ui/react";
-
-interface Cliente {
-  PRODUCTOS: string;
-  NOMBRE: string;
-  NRO: string;
-  DIRECCIÓN: string;
-  SERVICIO: string;
-}
+import { Cliente } from "./types/types";
 
 export default function Home() {
   const [clients, setClients] = useState<Cliente[]>([]);
+  const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);
+
   return (
     <Flex
       justifyContent={"center"}
@@ -35,8 +30,8 @@ export default function Home() {
         p={100}
         alignItems={"center"}
       >
-        <Import setClients={setClients} />
-        <Dates clients={clients} />
+        <Import setClients={setClients} setIsFileUploaded={setIsFileUploaded} />
+        <Dates clients={clients} isFileUploaded={isFileUploaded} />
       </Flex>
     </Flex>
   );

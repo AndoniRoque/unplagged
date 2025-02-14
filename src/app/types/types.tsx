@@ -5,4 +5,5 @@ export interface Cliente {
   DIRECCIÓN: string;
   SERVICIO: string;
   LOCALIDAD: string;
+  FECHA: string;
 }

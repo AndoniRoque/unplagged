@@ -49,12 +49,14 @@ function Import({ setClients, setIsFileUploaded }: ImportProps) {
         onChange={handleFileUpload}
         display="none"
       />
-      <Button
-        p={4}
-        onClick={() => fileInputRef.current && fileInputRef.current.click()}
-      >
-        Importar CSV
-      </Button>
+      <Flex flexDirection={"column"}>
+        <Button
+          p={4}
+          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+        >
+          Importar CSV
+        </Button>
+      </Flex>
       {fileName && (
         <Text mt={2} fontSize="sm" color="gray.600">
           Archivo: {fileName}

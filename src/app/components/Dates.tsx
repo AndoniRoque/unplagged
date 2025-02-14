@@ -1,10 +1,10 @@
 "use client";
-import { Button, Flex, Input, Text } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import React, { useState } from "react";
+import React from "react";
 import dayjs from "dayjs";
-
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { Cliente } from "../types/types";
 
 function Dates({
@@ -14,8 +14,6 @@ function Dates({
   clients: Cliente[];
   isFileUploaded: boolean;
 }) {
-  const [fechaEmision, setFechaEmision] = useState<string>("");
-  const [fechaTrabajo, setfechaTrabajo] = useState<string>("");
   const unplaggedIcon = new Image();
   unplaggedIcon.src = "/unplagged-icon.png";
   const efmarcoLogo = new Image();
@@ -31,20 +29,22 @@ function Dates({
       return alert("Por favor, sube un archivo CSV antes de generar el PDF.");
     }
 
-    if (fechaEmision === "" && fechaTrabajo === "") {
-      return alert("Por favor complete las fechas de emisión y trabajo.");
-    }
-
     const doc = new jsPDF();
     doc.addFont("/fonts/Roboto/Roboto-Regular.ttf", "Roboto", "normal");
     doc.addFont("/fonts/Roboto/Roboto-Bold.ttf", "Roboto", "bold");
     doc.setFont("Roboto", "normal");
-    let fechaTrabajoActual = dayjs(fechaTrabajo);
+
     let certificadoEnPagina = 0;
     let startY = 10;
 
     clients.forEach((cliente: Cliente) => {
       i++;
+
+      const fechaEmision = dayjs(cliente.FECHA, "DD/MM/YYYY");
+      const daysToSubtract = Math.floor((i - 1) / 5);
+      const fechaAux = fechaEmision
+        .format("DD/MM/YYYY")
+        .subtract(daysToSubtract, "day");
 
       if (certificadoEnPagina === 2) {
         doc.addPage();
@@ -52,22 +52,10 @@ function Dates({
         startY = 10;
       }
 
-      if (i % 5 === 0) {
-        fechaTrabajoActual = fechaTrabajoActual.subtract(1, "day");
-      }
-
       doc.setFontSize(9);
       doc.addImage(unplaggedIcon, "png", 10, startY, 20, 20);
-      doc.text(
-        `Fecha de Emisión: ${dayjs(fechaEmision).format("DD-MM-YYYY")}`,
-        150,
-        startY + 5
-      );
-      doc.text(
-        `Fecha de Trabajo: ${fechaTrabajoActual.format("DD-MM-YYYY")}`,
-        150,
-        startY + 10
-      );
+      doc.text(`Fecha de Emisión: ${cliente.FECHA}`, 150, startY + 5);
+      doc.text(`Fecha de Trabajo: ${fechaAux}`, 150, startY + 10);
       doc
         .setFontSize(10)
         .setFont("Roboto", "bold")
@@ -191,7 +179,7 @@ function Dates({
         alignItems={"center"}
         flexDirection={"column"}
       >
-        <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
+        {/* <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
           <Text w={200}>Fecha de Emisión:</Text>
           <Input
             type="date"
@@ -199,8 +187,8 @@ function Dates({
             value={fechaEmision}
             onChange={(e) => setFechaEmision(e.target.value)}
           />
-        </Flex>
-        <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
+        </Flex> */}
+        {/* <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
           <Text w={200}>Fecha de Trabajo:</Text>
           <Input
             type="date"
@@ -208,7 +196,7 @@ function Dates({
             value={fechaTrabajo}
             onChange={(e) => setfechaTrabajo(e.target.value)}
           />
-        </Flex>
+        </Flex> */}
         <Flex justifyContent={"center"} alignItems={"center"}>
           <Button p={4} m={4} onClick={() => savePDF(clients)}>
             Generar PDFs

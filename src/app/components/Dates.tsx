@@ -5,7 +5,7 @@ import autoTable from "jspdf-autotable";
 import React from "react";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { Cliente } from "../types/types";
+dayjs.extend(customParseFormat);
 
 function Dates({
   clients,
@@ -36,15 +36,24 @@ function Dates({
 
     let certificadoEnPagina = 0;
     let startY = 10;
+    let iterationCount = 0;
 
     clients.forEach((cliente: Cliente) => {
       i++;
+      iterationCount++;
 
-      const fechaEmision = dayjs(cliente.FECHA, "DD/MM/YYYY");
-      const daysToSubtract = Math.floor((i - 1) / 5);
+      // Parse the date from CSV (DD/MM/YY format)
+      const fechaEmision = dayjs(cliente.FECHA, "DD/MM/YY");
+
+      // Calculate days to subtract (one day per 5 iterations)
+      const daysToSubtract = Math.floor((iterationCount - 1) / 5);
       const fechaAux = fechaEmision
-        .format("DD/MM/YYYY")
-        .subtract(daysToSubtract, "day");
+        .subtract(daysToSubtract, "day")
+        .format("DD/MM/YY");
+
+      console.log(
+        `Certificate ${cliente.NRO}: Original date ${cliente.FECHA}, Work date ${fechaAux}`
+      );
 
       if (certificadoEnPagina === 2) {
         doc.addPage();
@@ -89,12 +98,12 @@ function Dates({
         startY + 35
       );
 
-      const servicios = cliente.SERVICIO.includes("/")
-        ? cliente.SERVICIO.split("/")
+      const servicios = cliente.SERVICIO.includes("-")
+        ? cliente.SERVICIO.split("-")
         : [cliente.SERVICIO];
 
-      const productos = cliente.PRODUCTOS.includes("/")
-        ? cliente.PRODUCTOS.split("/")
+      const productos = cliente.PRODUCTOS.includes("-")
+        ? cliente.PRODUCTOS.split("-")
         : [cliente.PRODUCTOS];
 
       const maxLength = Math.max(servicios.length, productos.length);
@@ -179,24 +188,6 @@ function Dates({
         alignItems={"center"}
         flexDirection={"column"}
       >
-        {/* <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
-          <Text w={200}>Fecha de Emisión:</Text>
-          <Input
-            type="date"
-            p={2}
-            value={fechaEmision}
-            onChange={(e) => setFechaEmision(e.target.value)}
-          />
-        </Flex> */}
-        {/* <Flex w={500} p={4} alignItems={"left"} flexDirection={"column"}>
-          <Text w={200}>Fecha de Trabajo:</Text>
-          <Input
-            type="date"
-            p={2}
-            value={fechaTrabajo}
-            onChange={(e) => setfechaTrabajo(e.target.value)}
-          />
-        </Flex> */}
         <Flex justifyContent={"center"} alignItems={"center"}>
           <Button p={4} m={4} onClick={() => savePDF(clients)}>
             Generar PDFs

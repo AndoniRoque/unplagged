@@ -22,7 +22,6 @@ function Import({ setClients, setIsFileUploaded }: ImportProps) {
 
       Papa.parse<Cliente>(file, {
         complete: (results: Papa.ParseResult<Cliente>) => {
-          console.log(results.data);
           setClients(results.data);
         },
         header: true,

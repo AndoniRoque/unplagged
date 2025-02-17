@@ -52,12 +52,18 @@ function Dates({
         i++;
         iterationCount++;
 
-        const fechaEmision = dayjs(cliente.FECHA, "DD/MM/YY");
+        let fechaEmision;
+
+        if (Number(cliente.FECHA.split("/")[0]) < 10) {
+          fechaEmision = dayjs(cliente.FECHA, "D/MM/YYYY");
+        } else {
+          fechaEmision = dayjs(cliente.FECHA, "DD/MM/YYYY");
+        }
 
         const daysToSubtract = Math.floor((iterationCount - 1) / 5);
         const fechaAux = fechaEmision
           .subtract(daysToSubtract, "day")
-          .format("DD/MM/YY");
+          .format("DD/MM/YYYY");
 
         if (certificadoEnPagina === 2) {
           doc.addPage();
@@ -102,12 +108,12 @@ function Dates({
           startY + 35
         );
 
-        const servicios = cliente.SERVICIO.includes("-")
-          ? cliente.SERVICIO.split("-")
+        const servicios = cliente.SERVICIO.includes("/")
+          ? cliente.SERVICIO.split("/")
           : [cliente.SERVICIO];
 
-        const productos = cliente.PRODUCTOS.includes("-")
-          ? cliente.PRODUCTOS.split("-")
+        const productos = cliente.PRODUCTOS.includes("/")
+          ? cliente.PRODUCTOS.split("/")
           : [cliente.PRODUCTOS];
 
         const maxLength = Math.max(servicios.length, productos.length);

@@ -28,6 +28,7 @@ function Import({ setClients, setIsFileUploaded }: ImportProps) {
                 acc[key.toLowerCase()] = cliente[key as keyof Cliente];
                 return acc;
               },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               {} as Record<string, any>
             ) as Cliente;
           });

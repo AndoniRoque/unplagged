@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import Dates from "./components/Dates";
+import dynamic from "next/dynamic";
+const Dates = dynamic(() => import("./components/Dates"), { ssr: false });
 import Import from "./components/Import";
 import { Flex, Image } from "@chakra-ui/react";
 import { Cliente } from "./types/types";

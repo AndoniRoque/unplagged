@@ -1,9 +1,10 @@
 export interface Cliente {
-  PRODUCTOS: string;
-  NOMBRE: string;
-  NRO: string;
-  DIRECCIÓN: string;
-  SERVICIO: string;
-  LOCALIDAD: string;
-  FECHA: string;
+  productos: string;
+  nombre: string;
+  nro: string;
+  dirección: string;
+  servicio: string;
+  localidad: string;
+  dosis: string;
+  fecha: string;
 }

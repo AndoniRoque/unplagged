@@ -54,10 +54,10 @@ function Dates({
 
         let fechaEmision;
 
-        if (Number(cliente.FECHA.split("/")[0]) < 10) {
-          fechaEmision = dayjs(cliente.FECHA, "D/MM/YYYY");
+        if (Number(cliente.fecha.split("/")[0]) < 10) {
+          fechaEmision = dayjs(cliente.fecha, "D/MM/YYYY");
         } else {
-          fechaEmision = dayjs(cliente.FECHA, "DD/MM/YYYY");
+          fechaEmision = dayjs(cliente.fecha, "DD/MM/YYYY");
         }
 
         const daysToSubtract = Math.floor((iterationCount - 1) / 5);
@@ -73,12 +73,12 @@ function Dates({
 
         doc.setFontSize(9);
         doc.addImage(unplaggedIcon, "png", 10, startY, 20, 20);
-        doc.text(`Fecha de Emisión: ${cliente.FECHA}`, 150, startY + 5);
+        doc.text(`Fecha de Emisión: ${cliente.fecha}`, 150, startY + 5);
         doc.text(`Fecha de Trabajo: ${fechaAux}`, 150, startY + 10);
         doc
           .setFontSize(10)
           .setFont("Roboto", "bold")
-          .text(`Certif. N° ${cliente.NRO}`, 150, startY + 15)
+          .text(`Certif. N° ${cliente.nro}`, 150, startY + 15)
           .setFont("Roboto", "normal");
         doc
           .setFont("Roboto", "bold")
@@ -100,31 +100,36 @@ function Dates({
         );
         doc.text("Representantes", 35, startY + 20);
         doc.addImage(efmarcoLogo, "png", 63, startY + 16, 23, 7);
-        doc.text(`Cliente: ${cliente.NOMBRE}`, 10, startY + 30);
-        doc.text(`Dirección: ${cliente.DIRECCIÓN}`, 10, startY + 35);
+        doc.text(`Cliente: ${cliente.nombre}`, 10, startY + 30);
+        doc.text(`Dirección: ${cliente.dirección}`, 10, startY + 35);
         doc.text(
-          `Localidad: ${cliente.LOCALIDAD ? cliente.LOCALIDAD : "Bahía Blanca"}`,
+          `Localidad: ${cliente.localidad ? cliente.localidad : "Bahía Blanca"}`,
           100,
           startY + 35
         );
 
-        const servicios = cliente.SERVICIO.includes("/")
-          ? cliente.SERVICIO.split("/")
-          : [cliente.SERVICIO];
+        const servicios = cliente.servicio.includes("/")
+          ? cliente.servicio.split("/")
+          : [cliente.servicio];
 
-        const productos = cliente.PRODUCTOS.includes("/")
-          ? cliente.PRODUCTOS.split("/")
-          : [cliente.PRODUCTOS];
+        const productos = cliente.productos.includes("/")
+          ? cliente.productos.split("/")
+          : [cliente.productos];
+
+        const dosis = cliente.dosis.includes(" / ")
+          ? cliente.dosis.split(" / ")
+          : [cliente.dosis];
 
         const maxLength = Math.max(servicios.length, productos.length);
 
         while (servicios.length < maxLength) servicios.push("");
         while (productos.length < maxLength) productos.push("");
+        while (dosis.length < maxLength) dosis.push("");
 
         const tableBody = servicios.map((servicio: string, index: number) => [
           servicio.trim(),
           productos[index].trim(),
-          "10 c/l",
+          dosis[index].trim(),
           "M",
         ]);
 

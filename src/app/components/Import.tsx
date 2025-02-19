@@ -22,7 +22,18 @@ function Import({ setClients, setIsFileUploaded }: ImportProps) {
 
       Papa.parse<Cliente>(file, {
         complete: (results: Papa.ParseResult<Cliente>) => {
-          setClients(results.data);
+          const normalizedData = results.data.map((cliente) => {
+            return Object.keys(cliente).reduce(
+              (acc, key) => {
+                acc[key.toLowerCase()] = cliente[key as keyof Cliente];
+                return acc;
+              },
+              {} as Record<string, any>
+            ) as Cliente;
+          });
+
+          console.log(normalizedData);
+          setClients(normalizedData);
         },
         header: true,
         skipEmptyLines: true,

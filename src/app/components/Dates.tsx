@@ -43,28 +43,8 @@ function Dates({
 
       let certificadoEnPagina = 0;
       let startY = 10;
-      let iterationCount = 0;
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      let i = 0;
 
       clients.forEach((cliente: Cliente) => {
-        i++;
-        iterationCount++;
-
-        let fechaEmision;
-
-        if (Number(cliente.fecha.split("/")[0]) < 10) {
-          fechaEmision = dayjs(cliente.fecha, "D/MM/YYYY");
-        } else {
-          fechaEmision = dayjs(cliente.fecha, "DD/MM/YYYY");
-        }
-
-        const daysToSubtract = Math.floor((iterationCount - 1) / 5);
-        const fechaAux = fechaEmision
-          .subtract(daysToSubtract, "day")
-          .format("DD/MM/YYYY");
-
         if (certificadoEnPagina === 2) {
           doc.addPage();
           certificadoEnPagina = 0;
@@ -74,7 +54,11 @@ function Dates({
         doc.setFontSize(9);
         doc.addImage(unplaggedIcon, "png", 10, startY, 20, 20);
         doc.text(`Fecha de Emisión: ${cliente.fecha}`, 150, startY + 5);
-        doc.text(`Fecha de Trabajo: ${fechaAux}`, 150, startY + 10);
+        doc.text(
+          `Fecha de Servicio: ${cliente["fecha de servicio"]}`,
+          150,
+          startY + 10
+        );
         doc
           .setFontSize(10)
           .setFont("Roboto", "bold")
@@ -94,7 +78,7 @@ function Dates({
           startY + 10
         );
         doc.text(
-          "Tel.: 0291-154706376 | e-mail: sandra_sapoznik@efmarco.com",
+          "Tel.: 0291-154706376 | e-mail: unplagged.info@gmail.com",
           35,
           startY + 15
         );
@@ -120,17 +104,23 @@ function Dates({
           ? cliente.dosis.split(" / ")
           : [cliente.dosis];
 
+        const sectoresTratados = cliente["sectores tratados"].includes("/")
+          ? cliente["sectores tratados"].split("/")
+          : [cliente["sectores tratados"]];
+
         const maxLength = Math.max(servicios.length, productos.length);
 
         while (servicios.length < maxLength) servicios.push("");
         while (productos.length < maxLength) productos.push("");
         while (dosis.length < maxLength) dosis.push("");
+        while (sectoresTratados.length < maxLength) sectoresTratados.push("");
 
         const tableBody = servicios.map((servicio: string, index: number) => [
           servicio.trim(),
           productos[index].trim(),
           dosis[index].trim(),
           "M",
+          sectoresTratados[index].trim(),
         ]);
 
         while (tableBody.length < 3) {
@@ -158,6 +148,7 @@ function Dates({
             textColor: [0, 0, 0],
             lineColor: [0, 0, 0],
             lineWidth: 0.2,
+            fontSize: 8,
           },
           body: tableBody,
         });

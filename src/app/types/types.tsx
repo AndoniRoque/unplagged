@@ -7,4 +7,6 @@ export interface Cliente {
   localidad: string;
   dosis: string;
   fecha: string;
+  ["fecha de servicio"]: string;
+  ["sectores tratados"]: string;
 }
